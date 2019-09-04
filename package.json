@@ -1,0 +1,24 @@
+{
+  "name": "me2day-backup-parser-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc && node build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Anthony Jeong",
+  "license": "ISC",
+  "dependencies": {
+    "inversify": "^5.0.1",
+    "reflect-metadata": "^0.1.13",
+    "sqlite3": "^4.1.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.7.3",
+    "@types/sqlite3": "^3.1.5",
+    "typescript": "^3.6.2"
+  }
+}
