@@ -22,14 +22,23 @@ export interface DatabaseHandler extends ResourceHandler<Database> {
 
 export interface FileHandler {
   checkPath: () => Promise<boolean>
+  read: (path: string) => Promise<string>
   getStats: (path: string) => Promise<Stats>
   getFileList: (path: string) => Promise<string[]>
+  execute: (f: (path: string) => void) => void
+}
+
+type ParseResult = <T> (f: ($: CheerioStatic) => T) => T;
+
+export interface Parser {
+  load: (path: string) => Promise<ParseResult>
 }
 
 export interface ApplicationContext {
   loggerHandler: ResourceHandler<winston.Logger>
   databaseHandler: DatabaseHandler
   fileHandler: FileHandler
+  htmlParser: Parser
   logger?: winston.Logger
   db?: Database
   execute: (f: () => void) => void

@@ -1,5 +1,6 @@
 import { FileHandler, ResourceHandler, ResourceOption } from "../defines";
 import * as fs from "fs";
+import * as path from "path";
 import { inject, injectable } from "inversify";
 import * as winston from "winston";
 import { TYPES } from "./types";
@@ -13,6 +14,10 @@ export default class DefaultFileHandler implements FileHandler {
 
   @inject(TYPES.LogHandler)
   readonly loggerHandler: ResourceHandler<winston.Logger>;
+
+  async read(path: string) {
+    return await util.promisify(fs.readFile)(path, 'utf8');
+  }
 
   async getFileList(path: string) {
     return await util.promisify(fs.readdir)(path, 'utf8');
@@ -40,5 +45,13 @@ export default class DefaultFileHandler implements FileHandler {
       return false;
     }
     return true;
+  }
+
+  async execute(f: (path: string) => void) {
+    const fileNameList = await this.getFileList(path.join(this.resourceOption.backup_path, 'post'));
+    await fileNameList
+      .map(fileName => path.join(this.resourceOption.backup_path, 'post', fileName))
+      .filter(fileName => path.extname(fileName) === '.html')
+      .forEach(filePath => f(filePath));
   }
 }

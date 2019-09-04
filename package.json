@@ -11,6 +11,8 @@
   "author": "Anthony Jeong",
   "license": "ISC",
   "dependencies": {
+    "@types/cheerio": "^0.22.13",
+    "cheerio": "^1.0.0-rc.3",
     "inversify": "^5.0.1",
     "reflect-metadata": "^0.1.13",
     "sqlite3": "^4.1.0",
