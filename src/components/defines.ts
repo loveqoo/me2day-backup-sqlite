@@ -1,9 +1,16 @@
 import * as winston from "winston";
 import { Database } from "sqlite3";
+import { Stats } from "fs";
 
 export interface ResourceHandler<T> {
-  getResource: (option: {}) => T
+  getResource: (option?: ResourceOption) => T
   close: () => void
+}
+
+export interface ResourceOption {
+  backup_path: string
+  db_path: string
+  mode: number
 }
 
 export interface DatabaseHandler extends ResourceHandler<Database> {
@@ -13,10 +20,17 @@ export interface DatabaseHandler extends ResourceHandler<Database> {
   load: (path: string) => void
 }
 
+export interface FileHandler {
+  checkPath: () => Promise<boolean>
+  getStats: (path: string) => Promise<Stats>
+  getFileList: (path: string) => Promise<string[]>
+}
+
 export interface ApplicationContext {
-  loggerResourceHandler: ResourceHandler<winston.Logger>
-  databaseResourceHandler: DatabaseHandler
+  loggerHandler: ResourceHandler<winston.Logger>
+  databaseHandler: DatabaseHandler
+  fileHandler: FileHandler
   logger?: winston.Logger
   db?: Database
-  execute: (f: () => void, option: {}) => void
+  execute: (f: () => void) => void
 }

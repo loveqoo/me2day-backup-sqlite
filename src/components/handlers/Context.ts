@@ -1,6 +1,6 @@
 import * as winston from "winston";
 import { Database } from "sqlite3";
-import { ApplicationContext, DatabaseHandler, ResourceHandler } from "../defines";
+import { ApplicationContext, DatabaseHandler, FileHandler, ResourceHandler } from "../defines";
 import { inject, injectable } from "inversify";
 import { TYPES } from "./types";
 import "reflect-metadata";
@@ -9,28 +9,30 @@ import "reflect-metadata";
 export default class DefaultApplicationContext implements ApplicationContext, ResourceHandler<void> {
 
   @inject(TYPES.LogHandler)
-  readonly loggerResourceHandler: ResourceHandler<winston.Logger>;
+  readonly loggerHandler: ResourceHandler<winston.Logger>;
   @inject(TYPES.SqliteHandler)
-  readonly databaseResourceHandler: DatabaseHandler;
+  readonly databaseHandler: DatabaseHandler;
+  @inject(TYPES.FileHandler)
+  readonly fileHandler: FileHandler;
 
-  logger : winston.Logger;
-  db : Database;
+  logger: winston.Logger;
+  db: Database;
 
-  async execute(f: () => void, option: {}) {
-    this.getResource(option);
+  async execute(f: () => void) {
+    this.getResource();
     await f();
     this.close();
   }
 
-  getResource(option: {}) {
-    this.logger = this.loggerResourceHandler.getResource({});
-    this.db = this.databaseResourceHandler.getResource({});
+  getResource() {
+    this.logger = this.loggerHandler.getResource();
+    this.db = this.databaseHandler.getResource();
   }
 
   close() {
     this.logger = null;
     this.db = null;
-    this.loggerResourceHandler.close();
-    this.databaseResourceHandler.close();
+    this.loggerHandler.close();
+    this.databaseHandler.close();
   }
 }

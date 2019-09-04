@@ -1,7 +1,7 @@
 import { Database, RunResult } from "sqlite3";
 import { inject, injectable } from "inversify";
 import DefaultResourceHandler from "./Handler";
-import { DatabaseHandler, ResourceHandler } from "../defines";
+import { DatabaseHandler, ResourceHandler, ResourceOption } from "../defines";
 import { TYPES } from "./types";
 import * as winston from "winston";
 import "reflect-metadata";
@@ -11,13 +11,12 @@ import * as fs from "fs";
 @injectable()
 export default class SqliteDatabaseHandler extends DefaultResourceHandler<Database> implements DatabaseHandler {
 
-  constructor(@inject("dbName") readonly resource: string,
-              @inject("dbMode") readonly mode: number,
+  constructor(@inject("resourceOption") readonly resourceOption: ResourceOption,
               @inject(TYPES.LogHandler) readonly loggerResourceHandler: ResourceHandler<winston.Logger>) {
     super(() => {
-      return new Database(this.resource, this.mode,
+      return new Database(this.resourceOption.db_path, this.resourceOption.mode,
         (err) => {
-          const logger = loggerResourceHandler.getResource({});
+          const logger = loggerResourceHandler.getResource();
           if (err) {
             logger.error(`sqlite open: ${err}`);
           } else {
@@ -26,7 +25,7 @@ export default class SqliteDatabaseHandler extends DefaultResourceHandler<Databa
         });
     }, () => {
       this.getResource().close((err) => {
-        const logger = loggerResourceHandler.getResource({});
+        const logger = loggerResourceHandler.getResource();
         if (err) {
           logger.error(`sqlite close: ${err}`);
         } else {
@@ -34,9 +33,6 @@ export default class SqliteDatabaseHandler extends DefaultResourceHandler<Databa
         }
       });
     });
-
-    this.resource = resource;
-    this.mode = mode;
   }
 
   find<T>(sql: string, mapper: (row: any) => T) {
@@ -76,7 +72,7 @@ export default class SqliteDatabaseHandler extends DefaultResourceHandler<Databa
 
   async load(path: string) {
     const db = this.getResource();
-    const logger = this.loggerResourceHandler.getResource({});
+    const logger = this.loggerResourceHandler.getResource();
     const readFile = (fileName:string) => util.promisify(fs.readFile)(fileName, 'utf8');
     const raw = await readFile(path);
     raw.split(';').forEach((query: string) => {
