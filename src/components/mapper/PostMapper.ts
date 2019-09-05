@@ -37,16 +37,16 @@ export class PostMapper implements Mapper<Pair<CheerioStatic, Cheerio>, Post> {
       writer: this.peopleMapper.map(toPair(left, $('img.profile_img'))),
       content: this.contentMapper.map(toPair(left, $('p.post_body'))),
       tag: this.tagMapper.map(toPair(left, $('p.post_tag'))),
-      metoo: $('a.pi_s.profile_popup.no_link img').map((idx, image) => {
+      metoo: $('a.pi_s.profile_popup.no_link img').map((_, image) => {
         return this.peopleMapper.map(toPair(left, $(image)));
       }).get(),
       timestamp: this.timestampMapper.map($('span.post_permalink').html()),
-      images: $('a.per_img.photo').map((idx, anchor) => {
+      images: $('a.per_img.photo').map((_, anchor) => {
         return this.imageMapper.map(toPair(left, $(anchor)));
       }).get(),
       location: this.locationMapper.map(toPair(left, $('div.map_container'))),
       embed: this.embedMapper.map(toPair(left, $('div.embed_me2photo'))),
-      comments: $('div.comment_item').map((idx, commentItem) => {
+      comments: $('div.comment_item').map((_, commentItem) => {
         return this.commentMapper.map(toPair(left, $(commentItem)));
       }).get()
     }
