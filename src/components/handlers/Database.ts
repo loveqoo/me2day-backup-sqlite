@@ -2,7 +2,7 @@ import { Database, RunResult } from "sqlite3";
 import { inject, injectable } from "inversify";
 import DefaultResourceHandler from "./Handler";
 import { DatabaseHandler, ResourceHandler, ResourceOption } from "../defines";
-import { TYPES } from "./types";
+import { TYPES } from "../inversify/types";
 import * as winston from "winston";
 import "reflect-metadata";
 import * as util from "util";

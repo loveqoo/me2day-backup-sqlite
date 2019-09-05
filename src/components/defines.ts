@@ -2,6 +2,15 @@ import * as winston from "winston";
 import { Database } from "sqlite3";
 import { Stats } from "fs";
 
+export interface Pair<A, B> {
+  left: A
+  right: B
+}
+
+export const toPair = <A, B>(a: A, b: B): Pair<A, B> => {
+  return { left: a, right: b };
+};
+
 export interface ResourceHandler<T> {
   getResource: (option?: ResourceOption) => T
   close: () => void
@@ -28,7 +37,7 @@ export interface FileHandler {
   execute: (f: (path: string) => void) => void
 }
 
-type ParseResult = <T> (f: ($: CheerioStatic) => T) => T;
+type ParseResult = <T> (f: (pair: Pair<CheerioStatic, Cheerio>) => T) => T;
 
 export interface Parser {
   load: (path: string) => Promise<ParseResult>
@@ -50,13 +59,13 @@ export interface Image {
 }
 
 export interface Location {
-  name: string,
-  link: string,
+  name: string
+  link: string
   image: string
 }
 
 export interface Embed {
-  src: string,
+  src: string
   thumbnail: string
 }
 
@@ -68,18 +77,30 @@ export interface Timestamp {
   minute: number
 }
 
+export interface Mapper<S, T> {
+  map: (source: S) => T
+}
+
 export interface People {
-  nickname: string,
+  id: string
+  nickname: string
   profile: string
+}
+
+export interface Comment {
+  writer: People
+  content: string
+  timestamp: Timestamp
 }
 
 export interface Post {
   writer: People
   content: string
-  tag: string
+  tag: string[]
   metoo: People[]
   timestamp: Timestamp
-  images: Image[],
-  location: Location,
+  images: Image[]
+  location: Location
   embed: Embed
+  comments: Comment[]
 }

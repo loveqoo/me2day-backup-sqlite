@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { inject, injectable } from "inversify";
 import * as winston from "winston";
-import { TYPES } from "./types";
+import { TYPES } from "../inversify/types";
 import * as util from "util";
 
 @injectable()

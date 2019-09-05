@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "tsc && node build/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha -r ts-node/register test/**/*.test.ts"
   },
   "keywords": [],
   "author": "Anthony Jeong",
@@ -19,8 +19,13 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.1",
+    "@types/mocha": "^5.2.7",
     "@types/node": "^12.7.3",
     "@types/sqlite3": "^3.1.5",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0",
+    "ts-node": "^8.3.0",
     "typescript": "^3.6.2"
   }
 }
