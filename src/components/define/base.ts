@@ -44,15 +44,16 @@ export interface Environment {
 }
 
 export interface ResourceHandler<T> {
-  getResource: (env?: Environment) => T
-  close: () => void
+  getResource: () => Promise<T>
+  close: () => Promise<void>
 }
 
 export interface DatabaseHandler extends ResourceHandler<Database> {
-  findOne: <T> (sql: string, mapper: (row: any) => T) => T | null
-  find: <T> (sql: string, mapper: (row: any) => T) => Array<T> | null
-  update: (sql: string) => number
-  load: (path: string) => void
+  findOne: <T> (sql: string, mapper: (row: any) => T) => Promise<T | null>
+  find: <T> (sql: string, mapper: (row: any) => T) => Promise<Array<T>>
+  update: (sql: string) => Promise<number>
+  insert: (sql: string) => Promise<number>
+  load: (path: string) => Promise<void>
 }
 
 export interface LogHandler extends ResourceHandler<Logger> {
@@ -61,11 +62,11 @@ export interface LogHandler extends ResourceHandler<Logger> {
 
 export interface FileHandler {
   read: (path: string) => Promise<string>
-  getStats: (path: string) => Promise<Stats>
-  checkStats: (path: string, precondition: Precondition<fs.Stats>) => Promise<boolean>
+  getStats: (path: string) => Promise<Stats | void>
+  checkStats: (path: string, precondition: Precondition<fs.Stats | void>) => Promise<boolean>
   getFileList: (path: string) => Promise<string[]>
   checkFileList: (path: string, precondition: Precondition<string[]>) => Promise<boolean>
-  execute: (base: string, f: (path: string) => void, filter: (path: string) => boolean) => void
+  execute: (base: string, f: (path: string) => Promise<void>, filter: (path: string) => boolean) => Promise<void>
 }
 
 type ParseResult = <T> (f: (pair: Pair<CheerioStatic, Cheerio>) => T) => T;
@@ -81,9 +82,13 @@ export interface ApplicationContext {
   htmlParser: Parser
   logger?: winston.Logger
   db?: Database
-  execute: (f: () => void) => void
+  execute: (f: () => Promise<void>) => void
 }
 
 export interface Mapper<S, T> {
   map: (source: S) => T
+}
+
+export interface Saver<T, U> {
+  save: (target: T) => Promise<U>
 }

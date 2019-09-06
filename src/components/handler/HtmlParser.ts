@@ -16,6 +16,6 @@ export default class DefaultHtmlParser implements Parser {
   async load(path: string) {
     const data = await this.fileHandler.read(path);
     const $: CheerioStatic = cheerio.load(data, { normalizeWhitespace: true });
-    return <T>(f: (pair: Pair<CheerioStatic, Cheerio>) => T) => f(toPair($, $.root()));
+    return Promise.resolve(<T>(f: (pair: Pair<CheerioStatic, Cheerio>) => T) => f(toPair($, $.root())));
   }
 }

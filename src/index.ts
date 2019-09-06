@@ -1,13 +1,15 @@
 import { container } from "./components/inversify/container";
-import { ApplicationContext, Environment, Mapper, Pair, Preconditions } from "./components/define/base";
-import { Post } from "./components/define/me2day.map";
+import { ApplicationContext, Environment, Mapper, Pair, Preconditions, Saver } from "./components/define/base";
+import * as map from "./components/define/me2day.map";
+import * as db from "./components/define/me2day.db";
 import { TYPES } from "./components/inversify/types";
 import * as fs from "fs";
 import * as path from "path";
 
 const context = container.get<ApplicationContext>(TYPES.ApplicationContext);
 const env = container.get<Environment>("Environment");
-const postMapper = container.get<Mapper<Pair<CheerioStatic, Cheerio>, Post>>(TYPES.PostMapper);
+const postMapper = container.get<Mapper<Pair<CheerioStatic, Cheerio>, map.Post>>(TYPES.PostMapper);
+const postSaver = container.get<Saver<map.Post, db.Post>>(TYPES.PostSaver);
 env.backup_path = '/Users/anthony/iCloud\ Drive\(아카이브\)/Documents/backup/me2day/garangnip';
 
 const SCHEMA_FILE = "./db/schema.sql";
@@ -34,11 +36,11 @@ context.execute(async () => {
     path.join(env.backup_path, 'post'),
     async (filePath: string) => {
       const holder = await context.htmlParser.load(filePath);
-      const post: Post = await holder(
+      const post: map.Post = await holder(
         (pair: Pair<CheerioStatic, Cheerio>) => postMapper.map(pair)
       );
+      await postSaver.save(post);
       //post.comments.length > 0 && console.log(post.comments[0]);
-      console.log(post.tag);
     },
     (fileName: string) => path.extname(fileName) === '.html'
   );

@@ -1,32 +1,40 @@
-import { Mapper, Pair, toPair } from "../define/base";
-import { Comment, Embed, Image, Location, People, Post, Timestamp, } from "../define/me2day.map";
+import { DatabaseHandler, LogHandler, Mapper, Pair, Saver, toPair } from "../define/base";
+import * as map from "../define/me2day.map";
+import * as db from "../define/me2day.db";
 import "cheerio";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../inversify/types";
+import { Callbacks, PostMappers, PostQueries } from "../define/query.db";
 
 @injectable()
-export class PostMapper implements Mapper<Pair<CheerioStatic, Cheerio>, Post> {
+export class PostMapper implements Mapper<Pair<CheerioStatic, Cheerio>, map.Post>, Saver<map.Post, db.Post> {
+
+  @inject(TYPES.SqliteHandler)
+  readonly databaseHandler: DatabaseHandler;
+
+  @inject(TYPES.LogHandler)
+  readonly loggerHandler: LogHandler;
 
   @inject(TYPES.TimestampMapper)
-  readonly timestampMapper: Mapper<string, Timestamp>;
+  readonly timestampMapper: Mapper<string, map.Timestamp>;
 
   @inject(TYPES.PeopleMapper)
-  readonly peopleMapper: Mapper<Pair<CheerioStatic, Cheerio>, People>;
+  readonly peopleMapper: Mapper<Pair<CheerioStatic, Cheerio>, map.People>;
 
   @inject(TYPES.ContentMapper)
   readonly contentMapper: Mapper<Pair<CheerioStatic, Cheerio>, string>;
 
   @inject(TYPES.LocationMapper)
-  readonly locationMapper: Mapper<Pair<CheerioStatic, Cheerio>, Location>;
+  readonly locationMapper: Mapper<Pair<CheerioStatic, Cheerio>, map.Location>;
 
   @inject(TYPES.EmbedMapper)
-  readonly embedMapper: Mapper<Pair<CheerioStatic, Cheerio>, Embed>;
+  readonly embedMapper: Mapper<Pair<CheerioStatic, Cheerio>, map.Embed>;
 
   @inject(TYPES.ImageMapper)
-  readonly imageMapper: Mapper<Pair<CheerioStatic, Cheerio>, Image>;
+  readonly imageMapper: Mapper<Pair<CheerioStatic, Cheerio>, map.Image>;
 
   @inject(TYPES.CommentMapper)
-  readonly commentMapper: Mapper<Pair<CheerioStatic, Cheerio>, Comment>;
+  readonly commentMapper: Mapper<Pair<CheerioStatic, Cheerio>, map.Comment>;
 
   @inject(TYPES.TagMapper)
   readonly tagMapper: Mapper<Pair<CheerioStatic, Cheerio>, string[]>;
@@ -50,6 +58,22 @@ export class PostMapper implements Mapper<Pair<CheerioStatic, Cheerio>, Post> {
       comments: $('div.comment_item').map((_, commentItem) => {
         return this.commentMapper.map(toPair(left, $(commentItem)));
       }).get()
+    }
+  }
+
+  async save(post: map.Post) {
+    const db = await this.databaseHandler.getResource();
+    const logger = await this.loggerHandler.getResource();
+    const prev = await this.databaseHandler.findOne(PostQueries.findByHashCode(post), PostMappers.all);
+    if (prev) {
+      if (prev.content === post.content) {
+        return prev;
+      }
+      db.run(PostQueries.update(prev.id, post), Callbacks.update(logger));
+      return this.databaseHandler.findOne(PostQueries.findById(prev.id), PostMappers.all);
+    } else {
+      const lastId = await this.databaseHandler.insert(PostQueries.insert(post));
+      return this.databaseHandler.findOne(PostQueries.findById(lastId), PostMappers.all);
     }
   }
 }

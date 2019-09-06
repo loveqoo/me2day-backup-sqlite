@@ -23,21 +23,21 @@ export default class DefaultApplicationContext implements ApplicationContext, Re
   logger: winston.Logger;
   db: Database;
 
-  async execute(f: () => void) {
-    this.getResource();
+  async execute(f: () => Promise<void>) {
+    await this.getResource();
     await f();
-    this.close();
+    await this.close();
   }
 
-  getResource() {
-    this.logger = this.loggerHandler.getResource();
-    this.db = this.databaseHandler.getResource();
+  async getResource() {
+    this.logger = await this.loggerHandler.getResource();
+    this.db = await this.databaseHandler.getResource();
   }
 
-  close() {
+  async close() {
     this.logger = null;
     this.db = null;
-    this.loggerHandler.close();
-    this.databaseHandler.close();
+    await this.loggerHandler.close();
+    await this.databaseHandler.close();
   }
 }

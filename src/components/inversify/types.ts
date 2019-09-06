@@ -9,6 +9,7 @@ const TYPES = {
   CommentMapper: Symbol.for("CommentMapper"),
   TagMapper: Symbol.for("TagMapper"),
   PostMapper: Symbol.for("PostMapper"),
+  PostSaver: Symbol.for("PostSaver"),
 
   LogHandler: Symbol.for("LogHandler"),
   SqliteHandler: Symbol.for("SqliteHandler"),

@@ -1,6 +1,7 @@
 import { Container } from "inversify";
-import { ApplicationContext, Environment, FileHandler, LogHandler, Mapper, Pair, Parser, ResourceHandler } from "../define/base";
-import { Comment, Embed, Image, Location, People, Post, Timestamp, } from "../define/me2day.map"
+import { ApplicationContext, Environment, FileHandler, LogHandler, Mapper, Pair, Parser, ResourceHandler, Saver } from "../define/base";
+import * as map from "../define/me2day.map"
+import * as db from "../define/me2day.db"
 import "cheerio";
 import { TYPES } from "./types";
 import { Database, OPEN_CREATE, OPEN_READWRITE } from "sqlite3";
@@ -21,15 +22,17 @@ import { CommentMapper } from "../mapper/CommentMapper";
 
 const container = new Container();
 
-container.bind<Mapper<string, Timestamp>>(TYPES.TimestampMapper).to(TimestampMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, People>>(TYPES.PeopleMapper).to(PeopleMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, Image>>(TYPES.ImageMapper).to(ImageMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, Location>>(TYPES.LocationMapper).to(LocationMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, Embed>>(TYPES.EmbedMapper).to(EmbedMapper);
+container.bind<Mapper<string, map.Timestamp>>(TYPES.TimestampMapper).to(TimestampMapper);
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.People>>(TYPES.PeopleMapper).to(PeopleMapper);
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Image>>(TYPES.ImageMapper).to(ImageMapper);
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Location>>(TYPES.LocationMapper).to(LocationMapper);
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Embed>>(TYPES.EmbedMapper).to(EmbedMapper);
 container.bind<Mapper<Pair<CheerioStatic, Cheerio>, string>>(TYPES.ContentMapper).to(ContentMapper);
 container.bind<Mapper<Pair<CheerioStatic, Cheerio>, string[]>>(TYPES.TagMapper).to(TagMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, Comment>>(TYPES.CommentMapper).to(CommentMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, Post>>(TYPES.PostMapper).to(PostMapper);
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Comment>>(TYPES.CommentMapper).to(CommentMapper);
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Post>>(TYPES.PostMapper).to(PostMapper);
+
+container.bind<Saver<map.Post, db.Post>>(TYPES.PostSaver).to(PostMapper);
 
 container.bind<LogHandler>(TYPES.LogHandler).to(DefaultLogHandler);
 container.bind<FileHandler>(TYPES.FileHandler).to(DefaultFileHandler);

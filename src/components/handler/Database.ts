@@ -14,17 +14,18 @@ export default class SqliteDatabaseHandler extends DefaultResourceHandler<Databa
               @inject(TYPES.LogHandler) readonly loggerResourceHandler: LogHandler) {
     super(() => {
       return new Database(this.env.db_path, this.env.mode,
-        (err) => {
-          const logger = loggerResourceHandler.getResource();
+        async (err) => {
+          const logger = await loggerResourceHandler.getResource();
           if (err) {
             logger.error(`sqlite open: ${err}`);
           } else {
             logger.info(`sqlite open: success`)
           }
         });
-    }, () => {
-      this.getResource().close((err) => {
-        const logger = loggerResourceHandler.getResource();
+    }, async () => {
+      const db = await this.getResource();
+      db.close(async (err) => {
+        const logger = await loggerResourceHandler.getResource();
         if (err) {
           logger.error(`sqlite close: ${err}`);
         } else {
@@ -34,9 +35,10 @@ export default class SqliteDatabaseHandler extends DefaultResourceHandler<Databa
     });
   }
 
-  find<T>(sql: string, mapper: (row: any) => T) {
+  async find<T>(sql: string, mapper: (row: any) => T) {
     let result: Array<T> = [];
-    this.getResource().all(sql, (err: Error, rows: any[]) => {
+    const db = await this.getResource();
+    db.all(sql, function (err: Error, rows: any[]) {
       if (err) {
         console.error(err);
       }
@@ -45,33 +47,51 @@ export default class SqliteDatabaseHandler extends DefaultResourceHandler<Databa
     return result;
   };
 
-  findOne<T>(sql: string, mapper: (row: any) => T) {
+  async findOne<T>(sql: string, mapper: (row: any) => T) {
     let result: T = null;
-    this.getResource().get(sql, (err: Error, row: any) => {
+    const db = await this.getResource();
+    const logger = await this.loggerResourceHandler.getResource();
+    db.get(sql, function (err: Error, row: any) {
       if (err) {
-        console.error(err);
+        logger.error(err);
       } else {
-        result = mapper(row);
+        result = row ? mapper(row) : null;
       }
     });
     return result;
   };
 
-  update(sql: string) {
+  async update(sql: string) {
     let result: number = 0;
-    this.getResource().run(sql, (rs: RunResult, err: Error) => {
+    const db = await this.getResource();
+    const logger = await this.loggerResourceHandler.getResource();
+    db.run(sql, function (err: Error) {
       if (err) {
-        console.log(err);
+        logger.error(err);
       } else {
-        result = rs.changes;
+        result = this.changes;
+      }
+    });
+    return result;
+  }
+
+  async insert(sql: string) {
+    let result: number = 0;
+    const db = await this.getResource();
+    const logger = await this.loggerResourceHandler.getResource();
+    db.run(sql, function (err: Error) {
+      if (err) {
+        logger.error(err);
+      } else {
+        result = this.lastID;
       }
     });
     return result;
   }
 
   async load(path: string) {
-    const db = this.getResource();
-    const logger = this.loggerResourceHandler.getResource();
+    const db = await this.getResource();
+    const logger = await this.loggerResourceHandler.getResource();
     const readFile = (fileName: string) => util.promisify(fs.readFile)(fileName, 'utf8');
     const raw = await readFile(path);
     raw.split(';').forEach((query: string) => {

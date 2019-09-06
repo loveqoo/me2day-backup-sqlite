@@ -34,20 +34,23 @@ export default class DefaultFileHandler implements FileHandler {
     return precondition.assert(await this.getFileList(path));
   }
 
-  async checkStats(path: string, precondition: Precondition<fs.Stats>) {
+  async checkStats(path: string, precondition: Precondition<fs.Stats | void>) {
     if (!path) {
       return false;
     }
     return precondition.assert(await this.getStats(path));
   }
 
-  async execute(base: string, f: (path: string) => void, filter: (path: string) => boolean = () => true) {
+  async execute(base: string, f: (path: string) => Promise<void>, filter: (path: string) => boolean = () => true) {
+    const logger = await this.loggerHandler.getResource();
     const stat = await this.getStats(base);
-    if (!stat.isDirectory()) {
-      this.loggerHandler.getResource().error(`path(${base}) is not directory`);
+    if (!stat || !stat.isDirectory()) {
+      logger.error(`path(${base}) is not directory`);
+      return;
     } else {
       const fileNameList = await this.getFileList(base);
-      await fileNameList.filter(filter).forEach(filePath => f(path.join(base, filePath)));
+      await Promise.all(fileNameList.filter(filter).map(filePath => f(path.join(base, filePath))));
+      return;
     }
   }
 }
