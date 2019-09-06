@@ -1,6 +1,6 @@
 import * as winston from "winston";
 import { Database } from "sqlite3";
-import { ApplicationContext, DatabaseHandler, FileHandler, Parser, ResourceHandler } from "../defines";
+import { ApplicationContext, DatabaseHandler, FileHandler, LogHandler, Parser, ResourceHandler } from "../defines";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../inversify/types";
 import "reflect-metadata";
@@ -9,7 +9,7 @@ import "reflect-metadata";
 export default class DefaultApplicationContext implements ApplicationContext, ResourceHandler<void> {
 
   @inject(TYPES.LogHandler)
-  readonly loggerHandler: ResourceHandler<winston.Logger>;
+  readonly loggerHandler: LogHandler;
 
   @inject(TYPES.SqliteHandler)
   readonly databaseHandler: DatabaseHandler;

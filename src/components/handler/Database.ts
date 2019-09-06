@@ -1,9 +1,8 @@
 import { Database, RunResult } from "sqlite3";
 import { inject, injectable } from "inversify";
 import DefaultResourceHandler from "./Handler";
-import { DatabaseHandler, ResourceHandler, ResourceOption } from "../defines";
+import { DatabaseHandler, Environment, LogHandler } from "../defines";
 import { TYPES } from "../inversify/types";
-import * as winston from "winston";
 import "reflect-metadata";
 import * as util from "util";
 import * as fs from "fs";
@@ -11,10 +10,10 @@ import * as fs from "fs";
 @injectable()
 export default class SqliteDatabaseHandler extends DefaultResourceHandler<Database> implements DatabaseHandler {
 
-  constructor(@inject("resourceOption") readonly resourceOption: ResourceOption,
-              @inject(TYPES.LogHandler) readonly loggerResourceHandler: ResourceHandler<winston.Logger>) {
+  constructor(@inject("Environment") readonly env: Environment,
+              @inject(TYPES.LogHandler) readonly loggerResourceHandler: LogHandler) {
     super(() => {
-      return new Database(this.resourceOption.db_path, this.resourceOption.mode,
+      return new Database(this.env.db_path, this.env.mode,
         (err) => {
           const logger = loggerResourceHandler.getResource();
           if (err) {
@@ -73,7 +72,7 @@ export default class SqliteDatabaseHandler extends DefaultResourceHandler<Databa
   async load(path: string) {
     const db = this.getResource();
     const logger = this.loggerResourceHandler.getResource();
-    const readFile = (fileName:string) => util.promisify(fs.readFile)(fileName, 'utf8');
+    const readFile = (fileName: string) => util.promisify(fs.readFile)(fileName, 'utf8');
     const raw = await readFile(path);
     raw.split(';').forEach((query: string) => {
       if (query.trim().length == 0) {

@@ -3,27 +3,27 @@ import {
   ApplicationContext,
   Comment,
   Embed,
+  Environment,
   FileHandler,
   Image,
   Location,
+  LogHandler,
   Mapper,
   Pair,
   Parser,
   People,
   Post,
   ResourceHandler,
-  ResourceOption,
   Timestamp
 } from "../defines";
-import { Logger } from "winston";
 import "cheerio";
 import { TYPES } from "./types";
 import { Database, OPEN_CREATE, OPEN_READWRITE } from "sqlite3";
-import LogHandler from "../handlers/Logger";
-import SqliteDatabaseHandler from "../handlers/Database";
-import DefaultApplicationContext from "../handlers/Context";
-import DefaultFileHandler from "../handlers/File";
-import DefaultHtmlParser from "../handlers/HtmlParser";
+import DefaultLogHandler from "../handler/Logger";
+import SqliteDatabaseHandler from "../handler/Database";
+import DefaultApplicationContext from "../handler/Context";
+import DefaultFileHandler from "../handler/File";
+import DefaultHtmlParser from "../handler/HtmlParser";
 import { PeopleMapper } from "../mapper/PeopleMapper";
 import { TimestampMapper } from "../mapper/TimestampMapper";
 import { ImageMapper } from "../mapper/ImageMapper";
@@ -46,16 +46,16 @@ container.bind<Mapper<Pair<CheerioStatic, Cheerio>, string[]>>(TYPES.TagMapper).
 container.bind<Mapper<Pair<CheerioStatic, Cheerio>, Comment>>(TYPES.CommentMapper).to(CommentMapper);
 container.bind<Mapper<Pair<CheerioStatic, Cheerio>, Post>>(TYPES.PostMapper).to(PostMapper);
 
-container.bind<ResourceHandler<Logger>>(TYPES.LogHandler).to(LogHandler);
+container.bind<LogHandler>(TYPES.LogHandler).to(DefaultLogHandler);
 container.bind<FileHandler>(TYPES.FileHandler).to(DefaultFileHandler);
 container.bind<Parser>(TYPES.HtmlParser).to(DefaultHtmlParser);
 container.bind<ResourceHandler<Database>>(TYPES.SqliteHandler).to(SqliteDatabaseHandler).inSingletonScope();
 container.bind<ApplicationContext>(TYPES.ApplicationContext).to(DefaultApplicationContext);
 
-const resourceOption: ResourceOption = {
+const env: Environment = {
   mode: OPEN_READWRITE | OPEN_CREATE,
   backup_path: process.argv[2] || '',
   db_path: './db/me2day.db'
 };
-container.bind<ResourceOption>("resourceOption").toConstantValue(resourceOption);
+container.bind<Environment>("Environment").toConstantValue(env);
 export { container };

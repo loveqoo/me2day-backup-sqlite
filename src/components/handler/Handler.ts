@@ -1,4 +1,4 @@
-import { ResourceHandler, ResourceOption } from "../defines";
+import { Environment, ResourceHandler } from "../defines";
 import { injectable, unmanaged } from "inversify";
 import "reflect-metadata";
 
@@ -27,7 +27,7 @@ export default class DefaultResourceHandler<T> implements ResourceHandler<T> {
     this.closer = callOnce(closer);
   }
 
-  getResource(option?: ResourceOption): T {
+  getResource(option?: Environment): T {
     return this.supplier();
   }
 
