@@ -22,23 +22,23 @@ import { CommentMapper } from "../mapper/CommentMapper";
 
 const container = new Container();
 
-container.bind<Mapper<string, map.Timestamp>>(TYPES.TimestampMapper).to(TimestampMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.People>>(TYPES.PeopleMapper).to(PeopleMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Image>>(TYPES.ImageMapper).to(ImageMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Location>>(TYPES.LocationMapper).to(LocationMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Embed>>(TYPES.EmbedMapper).to(EmbedMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, string>>(TYPES.ContentMapper).to(ContentMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, string[]>>(TYPES.TagMapper).to(TagMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Comment>>(TYPES.CommentMapper).to(CommentMapper);
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Post>>(TYPES.PostMapper).to(PostMapper);
+container.bind<Mapper<string, map.Timestamp>>(TYPES.TimestampMapper).to(TimestampMapper).inSingletonScope();
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.People>>(TYPES.PeopleMapper).to(PeopleMapper).inSingletonScope();
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Image>>(TYPES.ImageMapper).to(ImageMapper).inSingletonScope();
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Location>>(TYPES.LocationMapper).to(LocationMapper).inSingletonScope();
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Embed>>(TYPES.EmbedMapper).to(EmbedMapper).inSingletonScope();
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, string>>(TYPES.ContentMapper).to(ContentMapper).inSingletonScope();
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, string[]>>(TYPES.TagMapper).to(TagMapper).inSingletonScope();
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Comment>>(TYPES.CommentMapper).to(CommentMapper).inSingletonScope();
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Post>>(TYPES.PostMapper).to(PostMapper).inSingletonScope();
 
-container.bind<Saver<map.Post, db.Post>>(TYPES.PostSaver).to(PostMapper);
+container.bind<Saver<map.Post, db.Post>>(TYPES.PostSaver).to(PostMapper).inSingletonScope();
 
-container.bind<LogHandler>(TYPES.LogHandler).to(DefaultLogHandler);
-container.bind<FileHandler>(TYPES.FileHandler).to(DefaultFileHandler);
-container.bind<Parser>(TYPES.HtmlParser).to(DefaultHtmlParser);
+container.bind<LogHandler>(TYPES.LogHandler).to(DefaultLogHandler).inSingletonScope();
+container.bind<FileHandler>(TYPES.FileHandler).to(DefaultFileHandler).inSingletonScope();
+container.bind<Parser>(TYPES.HtmlParser).to(DefaultHtmlParser).inSingletonScope();
 container.bind<ResourceHandler<Database>>(TYPES.SqliteHandler).to(SqliteDatabaseHandler).inSingletonScope();
-container.bind<ApplicationContext>(TYPES.ApplicationContext).to(DefaultApplicationContext);
+container.bind<ApplicationContext>(TYPES.ApplicationContext).to(DefaultApplicationContext).inSingletonScope();
 
 const env: Environment = {
   mode: OPEN_READWRITE | OPEN_CREATE,
