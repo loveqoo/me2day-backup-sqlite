@@ -1,5 +1,6 @@
 import "cheerio";
-import { Embed, Mapper, Pair } from "../defines";
+import { Mapper, Pair } from "../define/base";
+import { Embed } from "../define/me2day.map";
 import { injectable } from "inversify";
 
 @injectable()

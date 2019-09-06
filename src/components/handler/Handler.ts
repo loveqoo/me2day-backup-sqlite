@@ -1,4 +1,4 @@
-import { Environment, ResourceHandler } from "../defines";
+import { Environment, ResourceHandler } from "../define/base";
 import { injectable, unmanaged } from "inversify";
 import "reflect-metadata";
 

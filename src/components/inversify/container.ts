@@ -1,21 +1,6 @@
 import { Container } from "inversify";
-import {
-  ApplicationContext,
-  Comment,
-  Embed,
-  Environment,
-  FileHandler,
-  Image,
-  Location,
-  LogHandler,
-  Mapper,
-  Pair,
-  Parser,
-  People,
-  Post,
-  ResourceHandler,
-  Timestamp
-} from "../defines";
+import { ApplicationContext, Environment, FileHandler, LogHandler, Mapper, Pair, Parser, ResourceHandler } from "../define/base";
+import { Comment, Embed, Image, Location, People, Post, Timestamp, } from "../define/me2day.map"
 import "cheerio";
 import { TYPES } from "./types";
 import { Database, OPEN_CREATE, OPEN_READWRITE } from "sqlite3";

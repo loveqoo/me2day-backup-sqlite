@@ -1,4 +1,5 @@
-import { Comment, Embed, Image, Location, Mapper, Pair, People, Post, Timestamp, toPair } from "../defines";
+import { Mapper, Pair, toPair } from "../define/base";
+import { Comment, Embed, Image, Location, People, Post, Timestamp, } from "../define/me2day.map";
 import "cheerio";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../inversify/types";

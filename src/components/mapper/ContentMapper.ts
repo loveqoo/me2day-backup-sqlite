@@ -1,4 +1,4 @@
-import { Mapper, Pair } from "../defines";
+import { Mapper, Pair } from "../define/base";
 import { injectable } from "inversify";
 import "cheerio";
 

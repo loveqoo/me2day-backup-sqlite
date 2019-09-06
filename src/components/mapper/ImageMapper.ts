@@ -1,4 +1,5 @@
-import { Image, Mapper, Pair } from "../defines";
+import { Mapper, Pair } from "../define/base";
+import { Image } from "../define/me2day.map";
 import "cheerio";
 import { injectable } from "inversify";
 

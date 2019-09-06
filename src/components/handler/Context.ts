@@ -1,6 +1,6 @@
 import * as winston from "winston";
 import { Database } from "sqlite3";
-import { ApplicationContext, DatabaseHandler, FileHandler, LogHandler, Parser, ResourceHandler } from "../defines";
+import { ApplicationContext, DatabaseHandler, FileHandler, LogHandler, Parser, ResourceHandler } from "../define/base";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../inversify/types";
 import "reflect-metadata";

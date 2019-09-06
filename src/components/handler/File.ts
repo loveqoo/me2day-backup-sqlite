@@ -1,4 +1,4 @@
-import { FileHandler, Precondition, ResourceHandler } from "../defines";
+import { FileHandler, Precondition, ResourceHandler } from "../define/base";
 import * as fs from "fs";
 import * as path from "path";
 import { inject, injectable } from "inversify";

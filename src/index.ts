@@ -1,5 +1,6 @@
 import { container } from "./components/inversify/container";
-import { ApplicationContext, Environment, Mapper, Pair, Post, Preconditions } from "./components/defines";
+import { ApplicationContext, Environment, Mapper, Pair, Preconditions } from "./components/define/base";
+import { Post } from "./components/define/me2day.map";
 import { TYPES } from "./components/inversify/types";
 import * as fs from "fs";
 import * as path from "path";

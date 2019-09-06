@@ -1,4 +1,4 @@
-import { FileHandler, Pair, Parser, ResourceHandler, toPair } from "../defines";
+import { FileHandler, Pair, Parser, ResourceHandler, toPair } from "../define/base";
 import { inject, injectable } from "inversify";
 import * as winston from "winston";
 import { TYPES } from "../inversify/types";

@@ -2,7 +2,7 @@ import * as winston from "winston";
 import { injectable } from "inversify";
 import DefaultResourceHandler from "./Handler";
 import "reflect-metadata";
-import { LogHandler } from "../defines";
+import { LogHandler } from "../define/base";
 
 @injectable()
 export default class DefaultLogHandler extends DefaultResourceHandler<winston.Logger> implements LogHandler {

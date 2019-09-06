@@ -1,4 +1,5 @@
-import { Mapper, Timestamp } from "../defines";
+import { Mapper } from "../define/base";
+import { Timestamp } from "../define/me2day.map";
 import { injectable } from "inversify";
 
 @injectable()
