@@ -7,7 +7,7 @@ import * as path from "path";
 const context = container.get<ApplicationContext>(TYPES.ApplicationContext);
 const env = container.get<Environment>("Environment");
 const postMapper = container.get<Mapper<Pair<CheerioStatic, Cheerio>, Post>>(TYPES.PostMapper);
-//env.backup_path = '/Users/anthony/iCloud\ Drive\(아카이브\)/Documents/backup/me2day/garangnip';
+env.backup_path = '/Users/anthony/iCloud\ Drive\(아카이브\)/Documents/backup/me2day/garangnip';
 
 const SCHEMA_FILE = "./db/schema.sql";
 
@@ -29,10 +29,16 @@ context.execute(async () => {
   }
   await context.databaseHandler.load(SCHEMA_FILE);
 
-  await context.fileHandler.execute(path.join(env.backup_path, 'post'), async (filePath: string) => {
-    const holder = await context.htmlParser.load(filePath);
-    const post: Post = await holder((pair: Pair<CheerioStatic, Cheerio>) => postMapper.map(pair));
-    //post.comments.length > 0 && console.log(post.comments[0]);
-    console.log(post);
-  }, (fileName: string) => path.extname(fileName) === '.html');
+  await context.fileHandler.execute(
+    path.join(env.backup_path, 'post'),
+    async (filePath: string) => {
+      const holder = await context.htmlParser.load(filePath);
+      const post: Post = await holder(
+        (pair: Pair<CheerioStatic, Cheerio>) => postMapper.map(pair)
+      );
+      //post.comments.length > 0 && console.log(post.comments[0]);
+      console.log(post.tag);
+    },
+    (fileName: string) => path.extname(fileName) === '.html'
+  );
 });
