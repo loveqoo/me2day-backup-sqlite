@@ -1,10 +1,18 @@
-import { Mapper, Pair } from "../define/base";
-import { People } from "../define/me2day.map";
+import { DatabaseHandler, Mapper, Pair, Saver } from "../define/base";
+import * as map from "../define/me2day.map";
+import * as db from "../define/me2day.db";
 import "cheerio";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../inversify/types";
+import { PeopleMappers, PeopleQueries } from "../define/query.db";
 
 @injectable()
-export class PeopleMapper implements Mapper<Pair<CheerioStatic, Cheerio>, People> {
+export class PeopleMapper implements Mapper<Pair<CheerioStatic, Cheerio>, map.People>, Saver<map.People, db.People> {
+
+  @inject(TYPES.SqliteHandler)
+  readonly databaseHandler: DatabaseHandler;
+
+  private regex: RegExp = /([a-zA-Z0-9_\-]+)\/profile.png$/gm;
 
   map(pair: Pair<CheerioStatic, Cheerio>) {
     const $ = pair.right;
@@ -16,7 +24,15 @@ export class PeopleMapper implements Mapper<Pair<CheerioStatic, Cheerio>, People
     }
   }
 
-  private regex: RegExp = /([a-zA-Z0-9_\-]+)\/profile.png$/gm;
+  async save(people: map.People) {
+    const db = this.databaseHandler;
+    const prevPeople = await db.findOne(PeopleQueries.findById(people.id), PeopleMappers.all);
+    if (prevPeople) {
+      return prevPeople;
+    }
+    await db.insert(PeopleQueries.insert(people));
+    return db.findOne(PeopleQueries.findById(people.id), PeopleMappers.all);
+  }
 
   private extractId(profile: string): string {
     if (!profile) {

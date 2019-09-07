@@ -1,6 +1,6 @@
 import * as winston from "winston";
 import { Logger } from "winston";
-import { Database } from "sqlite3";
+import { Database, RunResult } from "sqlite3";
 import * as fs from "fs";
 import { Stats } from "fs";
 
@@ -49,10 +49,10 @@ export interface ResourceHandler<T> {
 }
 
 export interface DatabaseHandler extends ResourceHandler<Database> {
-  findOne: <T> (sql: string, mapper: (row: any) => T) => Promise<T | null>
+  findOne: <T> (sql: string, mapper: (row: any) => T) => Promise<T>
   find: <T> (sql: string, mapper: (row: any) => T) => Promise<Array<T>>
-  update: (sql: string) => Promise<number>
-  insert: (sql: string) => Promise<number>
+  update: (sql: string, callback?: (this: RunResult, err: Error | null) => void) => Promise<number>
+  insert: (sql: string, callback?: (this: RunResult, err: Error | null) => void) => Promise<number>
   load: (path: string) => Promise<void>
 }
 
@@ -90,5 +90,5 @@ export interface Mapper<S, T> {
 }
 
 export interface Saver<T, U> {
-  save: (target: T) => Promise<U>
+  save: (target: T, option?: {}) => Promise<U>
 }

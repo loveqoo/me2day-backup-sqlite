@@ -50,4 +50,27 @@ describe('db_handle', function () {
       done();
     });
   });
+
+  it('select_tags', function (done) {
+    db.run(`INSERT INTO TAG (id)
+            VALUES ('_TEST_1')`);
+    db.run(`INSERT INTO TAG (id)
+            VALUES ('_TEST_2')`);
+    db.get(`SELECT COUNT(*) as cnt
+            FROM TAG`, function (err: Error, row: any) {
+      if (err) console.log(err);
+      expect(row).to.not.null;
+      expect(row).to.haveOwnProperty('cnt');
+      expect(row.cnt).eq(2)
+    });
+    db.all(`SELECT *
+            FROM TAG
+            WHERE ID in ('_TEST_1', '_TEST_2')`, function (err: Error, row: any) {
+      if (err) console.log(err);
+      expect(row).to.not.null;
+      expect(row).to.be.an('array');
+      expect(row.length).eq(2);
+      done();
+    });
+  });
 });

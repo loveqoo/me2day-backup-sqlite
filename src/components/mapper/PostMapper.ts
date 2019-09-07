@@ -1,10 +1,11 @@
-import { DatabaseHandler, LogHandler, Mapper, Pair, Saver, toPair } from "../define/base";
+import { DatabaseHandler, Mapper, Pair, Saver, toPair } from "../define/base";
 import * as map from "../define/me2day.map";
 import * as db from "../define/me2day.db";
 import "cheerio";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../inversify/types";
-import { Callbacks, PostMappers, PostQueries } from "../define/query.db";
+import { PostMappers, PostQueries } from "../define/query.db";
+import { Dates } from "../define/helper";
 
 @injectable()
 export class PostMapper implements Mapper<Pair<CheerioStatic, Cheerio>, map.Post>, Saver<map.Post, db.Post> {
@@ -12,14 +13,14 @@ export class PostMapper implements Mapper<Pair<CheerioStatic, Cheerio>, map.Post
   @inject(TYPES.SqliteHandler)
   readonly databaseHandler: DatabaseHandler;
 
-  @inject(TYPES.LogHandler)
-  readonly loggerHandler: LogHandler;
-
   @inject(TYPES.TimestampMapper)
   readonly timestampMapper: Mapper<string, map.Timestamp>;
 
   @inject(TYPES.PeopleMapper)
   readonly peopleMapper: Mapper<Pair<CheerioStatic, Cheerio>, map.People>;
+
+  @inject(TYPES.PeopleSaver)
+  readonly peopleSaver: Saver<map.People, db.People>;
 
   @inject(TYPES.ContentMapper)
   readonly contentMapper: Mapper<Pair<CheerioStatic, Cheerio>, string>;
@@ -62,18 +63,34 @@ export class PostMapper implements Mapper<Pair<CheerioStatic, Cheerio>, map.Post
   }
 
   async save(post: map.Post) {
-    const db = await this.databaseHandler.getResource();
-    const logger = await this.loggerHandler.getResource();
-    const prev = await this.databaseHandler.findOne(PostQueries.findByHashCode(post), PostMappers.all);
-    if (prev) {
-      if (prev.content === post.content) {
-        return prev;
-      }
-      db.run(PostQueries.update(prev.id, post), Callbacks.update(logger));
-      return this.databaseHandler.findOne(PostQueries.findById(prev.id), PostMappers.all);
-    } else {
-      const lastId = await this.databaseHandler.insert(PostQueries.insert(post));
-      return this.databaseHandler.findOne(PostQueries.findById(lastId), PostMappers.all);
+
+    await this.peopleSaver.save(post.writer);
+
+    const db = this.databaseHandler;
+    const posts: Array<db.Post> = await db.find(PostQueries.findByHashCode(post), PostMappers.all);
+    switch (posts.length) {
+      case 0 :
+        const lastId = await db.insert(PostQueries.insert(post));
+        return db.findOne(PostQueries.findById(lastId), PostMappers.all);
+      case 1 :
+        const prevPost = posts[0];
+        if (prevPost.content === post.content && prevPost.created_at == Dates.toDatabaseTimestamp(post.timestamp)) {
+          return prevPost;
+        }
+        await db.update(PostQueries.update(prevPost.id, post));
+        return db.findOne(PostQueries.findById(prevPost.id), PostMappers.all);
+      default :
+        const idx = posts.findIndex((p: db.Post) => {
+          return p.content === post.content && p.created_at == Dates.toDatabaseTimestamp(post.timestamp)
+        });
+        if (idx < 0) {
+          const lastId = await db.insert(PostQueries.insert(post));
+          return db.findOne(PostQueries.findById(lastId), PostMappers.all);
+        } else {
+          const prevPost = posts[idx];
+          await db.update(PostQueries.update(prevPost.id, post));
+          return db.findOne(PostQueries.findById(prevPost.id), PostMappers.all);
+        }
     }
   }
 }

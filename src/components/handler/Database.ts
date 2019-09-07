@@ -47,7 +47,7 @@ export default class SqliteDatabaseHandler extends DefaultResourceHandler<Databa
     return result;
   };
 
-  async findOne<T>(sql: string, mapper: (row: any) => T) {
+  async findOne<T>(sql: string, mapper: (row: any) => T): Promise<T> {
     let result: T = null;
     const db = await this.getResource();
     const logger = await this.loggerResourceHandler.getResource();
@@ -61,31 +61,33 @@ export default class SqliteDatabaseHandler extends DefaultResourceHandler<Databa
     return result;
   };
 
-  async update(sql: string) {
+  async update(sql: string, callback?: (this: RunResult, err: Error | null) => void) {
     let result: number = 0;
     const db = await this.getResource();
     const logger = await this.loggerResourceHandler.getResource();
-    db.run(sql, function (err: Error) {
+    const defaultCallback = function (err: Error) {
       if (err) {
         logger.error(err);
       } else {
         result = this.changes;
       }
-    });
+    };
+    db.run(sql, callback || defaultCallback);
     return result;
   }
 
-  async insert(sql: string) {
+  async insert(sql: string, callback?: (this: RunResult, err: Error | null) => void) {
     let result: number = 0;
     const db = await this.getResource();
     const logger = await this.loggerResourceHandler.getResource();
-    db.run(sql, function (err: Error) {
+    const defaultCallback = function (err: Error) {
       if (err) {
         logger.error(err);
       } else {
         result = this.lastID;
       }
-    });
+    };
+    db.run(sql, callback || defaultCallback);
     return result;
   }
 

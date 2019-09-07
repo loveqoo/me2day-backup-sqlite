@@ -3,6 +3,7 @@ import { DatabaseHandler, Mapper, Pair, Saver } from "../define/base";
 import { inject, injectable } from "inversify";
 import { Tag } from "../define/me2day.db";
 import { TYPES } from "../inversify/types";
+import { TagQueries } from "../define/query.db";
 
 @injectable()
 export class TagMapper implements Mapper<Pair<CheerioStatic, Cheerio>, string[]>, Saver<string[], Tag[]> {
@@ -25,10 +26,10 @@ export class TagMapper implements Mapper<Pair<CheerioStatic, Cheerio>, string[]>
   }
 
   async save(target: string[]) {
-    const db = await this.databaseHandler.getResource();
-    return target.map((tag, _) => {
-      db.run(`INSERT INTO TAG (id) VALUES ('${tag}');`);
+    const db = this.databaseHandler;
+    return Promise.all(target.map(async (tag) => {
+      await db.insert(TagQueries.insert(tag));
       return { id: tag };
-    });
+    }));
   }
 }

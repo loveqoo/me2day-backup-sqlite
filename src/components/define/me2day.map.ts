@@ -6,7 +6,7 @@ export interface Image {
 export interface Location {
   name: string
   link: string
-  image: string
+  image_path: string
 }
 
 export interface Embed {

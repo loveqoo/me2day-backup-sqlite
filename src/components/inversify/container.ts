@@ -33,6 +33,11 @@ container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Comment>>(TYPES.CommentM
 container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Post>>(TYPES.PostMapper).to(PostMapper).inSingletonScope();
 
 container.bind<Saver<map.Post, db.Post>>(TYPES.PostSaver).to(PostMapper).inSingletonScope();
+container.bind<Saver<map.People, db.People>>(TYPES.PeopleSaver).to(PeopleMapper).inSingletonScope();
+container.bind<Saver<string[], db.Tag[]>>(TYPES.TagSaver).to(TagMapper).inSingletonScope();
+container.bind<Saver<map.Location, db.Location>>(TYPES.LocationSaver).to(LocationMapper).inSingletonScope();
+container.bind<Saver<map.Image, db.Image>>(TYPES.ImageSaver).to(ImageMapper).inSingletonScope();
+container.bind<Saver<map.Embed, db.Embed>>(TYPES.EmbedSaver).to(EmbedMapper).inSingletonScope();
 
 container.bind<LogHandler>(TYPES.LogHandler).to(DefaultLogHandler).inSingletonScope();
 container.bind<FileHandler>(TYPES.FileHandler).to(DefaultFileHandler).inSingletonScope();
