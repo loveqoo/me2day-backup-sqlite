@@ -1,13 +1,11 @@
-import { DatabaseHandler, Mapper, Pair, Saver } from "../define/base";
+import { DatabaseHandler, Mapper, Pair } from "../define/base";
 import * as map from "../define/me2day.map";
-import * as db from "../define/me2day.db";
 import "cheerio";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../inversify/types";
-import { PeopleMappers, PeopleQueries } from "../define/query.db";
 
 @injectable()
-export class PeopleMapper implements Mapper<Pair<CheerioStatic, Cheerio>, map.People>, Saver<map.People, db.People> {
+export class PeopleMapper implements Mapper<Pair<CheerioStatic, Cheerio>, map.People> {
 
   @inject(TYPES.SqliteHandler)
   readonly databaseHandler: DatabaseHandler;
@@ -22,16 +20,6 @@ export class PeopleMapper implements Mapper<Pair<CheerioStatic, Cheerio>, map.Pe
       nickname: $.attr('alt'),
       profile: profile
     }
-  }
-
-  async save(people: map.People) {
-    const db = this.databaseHandler;
-    const prevPeople = await db.findOne(PeopleQueries.findById(people.id), PeopleMappers.all);
-    if (prevPeople) {
-      return prevPeople;
-    }
-    await db.insert(PeopleQueries.insert(people));
-    return db.findOne(PeopleQueries.findById(people.id), PeopleMappers.all);
   }
 
   private extractId(profile: string): string {

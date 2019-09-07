@@ -6,6 +6,7 @@ import { TYPES } from "../inversify/types";
 import "reflect-metadata";
 import * as util from "util";
 import * as fs from "fs";
+import { Databases } from "../define/helper";
 
 @injectable()
 export default class SqliteDatabaseHandler extends DefaultResourceHandler<Database> implements DatabaseHandler {
@@ -91,22 +92,30 @@ export default class SqliteDatabaseHandler extends DefaultResourceHandler<Databa
     return result;
   }
 
-  async load(path: string) {
+  async doInTransaction(f: (db: Database) => Promise<void>) {
     const db = await this.getResource();
     const logger = await this.loggerResourceHandler.getResource();
+    await db.serialize(async () => {
+      try {
+        db.run("BEGIN");
+        logger.info(`Transaction Start`);
+        await f(db);
+        db.run("COMMIT");
+        logger.info(`Transaction End`);
+      } catch (error) {
+        logger.info(`Transaction Error: ${error}`);
+        db.run("ROLLBACK");
+      }
+    });
+  }
+
+  async load(path: string) {
+    const db = await this.getResource();
     const readFile = (fileName: string) => util.promisify(fs.readFile)(fileName, 'utf8');
     const raw = await readFile(path);
-    raw.split(';').forEach((query: string) => {
-      if (query.trim().length == 0) {
-        return;
-      }
-      db.run(query, (rs: RunResult, err: Error) => {
-        if (err) {
-          logger.error(`${err}`);
-        } else {
-          logger.info(`sqlite load: ${query.replace(/\n|\s{2,}/gim, '')}`);
-        }
-      });
-    });
+    const queries = raw.split(';')
+      .map(sql => sql.replace(/\n|\s{2,}/gim, ' '))
+      .filter(sql => sql.trim().length > 0);
+    await Databases.sequentialRuns(db, queries);
   }
 }

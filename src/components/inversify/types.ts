@@ -10,13 +10,6 @@ const TYPES = {
   TagMapper: Symbol.for("TagMapper"),
   PostMapper: Symbol.for("PostMapper"),
 
-  PostSaver: Symbol.for("PostSaver"),
-  PeopleSaver: Symbol.for("PeopleSaver"),
-  TagSaver: Symbol.for("TagSaver"),
-  LocationSaver: Symbol.for("LocationSaver"),
-  ImageSaver: Symbol.for("ImageSaver"),
-  EmbedSaver: Symbol.for("EmbedSaver"),
-
   LogHandler: Symbol.for("LogHandler"),
   SqliteHandler: Symbol.for("SqliteHandler"),
   FileHandler: Symbol.for("FileHandler"),

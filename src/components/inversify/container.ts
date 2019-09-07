@@ -1,7 +1,6 @@
 import { Container } from "inversify";
-import { ApplicationContext, Environment, FileHandler, LogHandler, Mapper, Pair, Parser, ResourceHandler, Saver } from "../define/base";
+import { ApplicationContext, Environment, FileHandler, LogHandler, Mapper, Pair, Parser, ResourceHandler } from "../define/base";
 import * as map from "../define/me2day.map"
-import * as db from "../define/me2day.db"
 import "cheerio";
 import { TYPES } from "./types";
 import { Database, OPEN_CREATE, OPEN_READWRITE } from "sqlite3";
@@ -27,17 +26,10 @@ container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.People>>(TYPES.PeopleMap
 container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Image>>(TYPES.ImageMapper).to(ImageMapper).inSingletonScope();
 container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Location>>(TYPES.LocationMapper).to(LocationMapper).inSingletonScope();
 container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Embed>>(TYPES.EmbedMapper).to(EmbedMapper).inSingletonScope();
-container.bind<Mapper<Pair<CheerioStatic, Cheerio>, string>>(TYPES.ContentMapper).to(ContentMapper).inSingletonScope();
+container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Content>>(TYPES.ContentMapper).to(ContentMapper).inSingletonScope();
 container.bind<Mapper<Pair<CheerioStatic, Cheerio>, string[]>>(TYPES.TagMapper).to(TagMapper).inSingletonScope();
 container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Comment>>(TYPES.CommentMapper).to(CommentMapper).inSingletonScope();
 container.bind<Mapper<Pair<CheerioStatic, Cheerio>, map.Post>>(TYPES.PostMapper).to(PostMapper).inSingletonScope();
-
-container.bind<Saver<map.Post, db.Post>>(TYPES.PostSaver).to(PostMapper).inSingletonScope();
-container.bind<Saver<map.People, db.People>>(TYPES.PeopleSaver).to(PeopleMapper).inSingletonScope();
-container.bind<Saver<string[], db.Tag[]>>(TYPES.TagSaver).to(TagMapper).inSingletonScope();
-container.bind<Saver<map.Location, db.Location>>(TYPES.LocationSaver).to(LocationMapper).inSingletonScope();
-container.bind<Saver<map.Image, db.Image>>(TYPES.ImageSaver).to(ImageMapper).inSingletonScope();
-container.bind<Saver<map.Embed, db.Embed>>(TYPES.EmbedSaver).to(EmbedMapper).inSingletonScope();
 
 container.bind<LogHandler>(TYPES.LogHandler).to(DefaultLogHandler).inSingletonScope();
 container.bind<FileHandler>(TYPES.FileHandler).to(DefaultFileHandler).inSingletonScope();

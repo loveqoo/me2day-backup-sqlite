@@ -54,6 +54,7 @@ export interface DatabaseHandler extends ResourceHandler<Database> {
   update: (sql: string, callback?: (this: RunResult, err: Error | null) => void) => Promise<number>
   insert: (sql: string, callback?: (this: RunResult, err: Error | null) => void) => Promise<number>
   load: (path: string) => Promise<void>
+  doInTransaction: (f: (db: Database) => Promise<void>) => Promise<void>
 }
 
 export interface LogHandler extends ResourceHandler<Logger> {
@@ -86,9 +87,5 @@ export interface ApplicationContext {
 }
 
 export interface Mapper<S, T> {
-  map: (source: S) => T
-}
-
-export interface Saver<T, U> {
-  save: (target: T, option?: {}) => Promise<U>
+  map: (source: S, option?: {}) => T
 }

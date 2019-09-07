@@ -5,6 +5,7 @@ import { inject, injectable } from "inversify";
 import * as winston from "winston";
 import { TYPES } from "../inversify/types";
 import * as util from "util";
+import { Promises } from "../define/helper";
 
 @injectable()
 export default class DefaultFileHandler implements FileHandler {
@@ -49,7 +50,9 @@ export default class DefaultFileHandler implements FileHandler {
       return;
     } else {
       const fileNameList = await this.getFileList(base);
-      await Promise.all(fileNameList.filter(filter).map(filePath => f(path.join(base, filePath))));
+      const filteredFileNameList = fileNameList.filter(filter).map(filePath => path.join(base, filePath));
+      await Promises.sequential(filteredFileNameList, f);
+      //await Promise.all(fileNameList.filter(filter).map(filePath => f(path.join(base, filePath))));
       return;
     }
   }

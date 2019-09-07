@@ -30,18 +30,30 @@ export interface People {
 
 export interface Comment {
   writer: People
-  content: string
+  content: Content
   timestamp: Timestamp
+}
+
+export interface Anchor {
+  title: string
+  url: string
+  domain: string
+}
+
+export interface Content {
+  body: string
+  anchors: Anchor[]
 }
 
 export interface Post {
   writer: People
-  content: string
-  tag: string[]
+  content: Content
+  tags: string[]
   metoo: People[]
   timestamp: Timestamp
   images: Image[]
   location: Location
   embed: Embed
   comments: Comment[]
+  file_path: string
 }

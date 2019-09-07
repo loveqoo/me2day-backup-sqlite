@@ -10,6 +10,7 @@ export interface Post {
   writer: string
   created_at: string
   hash_code: number
+  file_path: string
 }
 
 export interface Comment {

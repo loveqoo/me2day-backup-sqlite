@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS POST
     writer     VACHAR(50)   NOT NULL,
     created_at TIMESTAMP    NOT NULL,
     hash_code  INTEGER      NOT NULl,
+    file_path  VARCHAR(100) NOT NULl,
     FOREIGN KEY (writer) REFERENCES PEOPLE (id)
 );
 
@@ -72,4 +73,13 @@ CREATE TABLE IF NOT EXISTS POST_TAG
     tag_id  VARCHAR(30) NOT NULL,
     FOREIGN KEY (post_id) REFERENCES POST (id),
     FOREIGN KEY (tag_id) REFERENCES TAG (id)
+);
+
+DROP TABLE IF EXISTS POST_METOO;
+CREATE TABLE IF NOT EXISTS POST_METOO
+(
+    post_id   LONG        NOT NULL,
+    people_id VARCHAR(30) NOT NULL,
+    FOREIGN KEY (post_id) REFERENCES POST (id),
+    FOREIGN KEY (people_id) REFERENCES PEOPLE (id)
 );

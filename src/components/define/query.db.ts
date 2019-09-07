@@ -4,22 +4,23 @@ import { Dates, Strings } from "./helper";
 
 export const PostQueries = {
   insert: (post: map.Post) =>
-    `INSERT INTO POST (content, writer, created_at, hash_code) 
-        VALUES ('${post.content}', 
-                ${post.writer.id}, 
+    `INSERT INTO POST (content, writer, created_at, hash_code, file_path) 
+        VALUES ('${post.content.body.replace(/'/g, "\'\'")}', 
+                '${post.writer.id}', 
                 '${Dates.toDatabaseTimestamp(post.timestamp)}', 
-                ${Strings.hashCode(post.content)})`,
+                ${Strings.hashCode(post.content.body)},
+                '${post.file_path}')`,
   findById: (id: number) =>
     `SELECT * FROM POST WHERE id = ${id}`,
   findByHashCode: (post: map.Post) =>
-    `SELECT * FROM POST WHERE hash_code = ${Strings.hashCode(post.content)}`,
+    `SELECT * FROM POST WHERE hash_code = ${Strings.hashCode(post.content.body)}`,
   update: (id: number, post: map.Post) =>
     `UPDATE POST 
         SET 
           content = '${post.content}', 
-          writer = ${post.writer.id}, 
+          writer = '${post.writer.id}', 
           created_at = '${Dates.toDatabaseTimestamp(post.timestamp)}', 
-          hash_code = ${Strings.hashCode(post.content)}) 
+          hash_code = ${Strings.hashCode(post.content.body)}) 
         WHERE id = ${id}`
 };
 
@@ -30,7 +31,28 @@ export const PostMappers = {
       content: row.content,
       writer: row.writer,
       created_at: row.created_at,
-      hash_code: row.hash_code
+      hash_code: row.hash_code,
+      file_path: row.file_path
+    }
+  }
+};
+
+export const CommentQueries = {
+  findById: (id: number) =>
+    `SELECT * FROM COMMENT WHERE id = '${id}'`,
+  insert: (comment: map.Comment, postId: number) =>
+    `INSERT INTO COMMENT (content, writer, post_id, created_at)  
+        VALUES ('${comment.content.body.replace(/'/g, "\'\'")}', '${comment.writer.id}', '${postId}', '${Dates.toDatabaseTimestamp(comment.timestamp)}')`
+};
+
+export const CommentMappers = {
+  all: (row: any): db.Comment => {
+    return {
+      id: row.id,
+      content: row.content,
+      writer: row.writer,
+      post_id: row.post_id,
+      created_at: row.created_at
     }
   }
 };
@@ -38,7 +60,11 @@ export const PostMappers = {
 export const PeopleQueries = {
   findById: (id: string) =>
     `SELECT * FROM PEOPLE WHERE id = '${id}'`,
-  insert: (people: map.People) => `INSERT INTO PEOPLE (id, nick_name, profile_path) VALUES (${people.id}, ${people.nickname}, ${people.profile})`
+  insert: (people: map.People) =>
+    `INSERT INTO PEOPLE (id, nick_name, profile_path) 
+        SELECT '${people.id}', '${people.nickname}', '${people.profile}' 
+    WHERE NOT EXISTS (SELECT 1 FROM PEOPLE WHERE id = '${people.id}') 
+    `
 };
 
 export const PeopleMappers = {
@@ -52,7 +78,24 @@ export const PeopleMappers = {
 };
 
 export const TagQueries = {
-  insert: (tag: string) => `INSERT INTO TAG (id) VALUES ('${tag}')`
+  insert: (tag: string) => `INSERT INTO TAG (id) SELECT '${tag}' WHERE NOT EXISTS (SELECT 1 FROM TAG WHERE id = '${tag}')`,
+  all: (tags: string[]) => `SELECT * FROM TAG WHERE id in (${tags.map(tag => "'" + tag + "'").join(',')})`
+};
+
+export const TagMappers = {
+  all: (row: any): db.Tag => {
+    return {
+      id: row.id
+    }
+  }
+};
+
+export const PostTagQueries = {
+  insert: (postId: number, tagId: string) => `INSERT INTO POST_TAG (post_id, tag_id) VALUES (${postId}, '${tagId}')`
+};
+
+export const PostMetooQueries = {
+  insert: (postId: number, peopleId: string) => `INSERT INTO POST_METOO (post_id, people_id) VALUES (${postId}, '${peopleId}')`
 };
 
 export const LocationQueries = {

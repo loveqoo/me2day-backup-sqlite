@@ -1,12 +1,10 @@
 import "cheerio";
-import { DatabaseHandler, Mapper, Pair, Saver } from "../define/base";
+import { DatabaseHandler, Mapper, Pair } from "../define/base";
 import { inject, injectable } from "inversify";
-import { Tag } from "../define/me2day.db";
 import { TYPES } from "../inversify/types";
-import { TagQueries } from "../define/query.db";
 
 @injectable()
-export class TagMapper implements Mapper<Pair<CheerioStatic, Cheerio>, string[]>, Saver<string[], Tag[]> {
+export class TagMapper implements Mapper<Pair<CheerioStatic, Cheerio>, string[]> {
 
   @inject(TYPES.SqliteHandler)
   readonly databaseHandler: DatabaseHandler;
@@ -23,13 +21,5 @@ export class TagMapper implements Mapper<Pair<CheerioStatic, Cheerio>, string[]>
       .replace(/[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣\s]/g, '')
       .replace(/\s{2,}/g, ' ')
       .split(' ');
-  }
-
-  async save(target: string[]) {
-    const db = this.databaseHandler;
-    return Promise.all(target.map(async (tag) => {
-      await db.insert(TagQueries.insert(tag));
-      return { id: tag };
-    }));
   }
 }
