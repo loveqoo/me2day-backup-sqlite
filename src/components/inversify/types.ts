@@ -15,5 +15,6 @@ const TYPES = {
   FileHandler: Symbol.for("FileHandler"),
   HtmlParser: Symbol.for("HtmlParser"),
   ApplicationContext: Symbol.for("ApplicationContext"),
+  Me2dayService: Symbol.for("Me2dayService"),
 };
 export { TYPES };

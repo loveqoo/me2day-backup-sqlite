@@ -1,5 +1,5 @@
 import { Container } from "inversify";
-import { ApplicationContext, Environment, FileHandler, LogHandler, Mapper, Pair, Parser, ResourceHandler } from "../define/base";
+import { ApplicationContext, Environment, FileHandler, LogHandler, Mapper, Me2dayService, Pair, Parser, ResourceHandler } from "../define/base";
 import * as map from "../define/me2day.map"
 import "cheerio";
 import { TYPES } from "./types";
@@ -18,6 +18,7 @@ import { ContentMapper } from "../mapper/ContentMapper";
 import { TagMapper } from "../mapper/TagMapper";
 import { PostMapper } from "../mapper/PostMapper";
 import { CommentMapper } from "../mapper/CommentMapper";
+import Me2day from "../me2day";
 
 const container = new Container();
 
@@ -36,6 +37,7 @@ container.bind<FileHandler>(TYPES.FileHandler).to(DefaultFileHandler).inSingleto
 container.bind<Parser>(TYPES.HtmlParser).to(DefaultHtmlParser).inSingletonScope();
 container.bind<ResourceHandler<Database>>(TYPES.SqliteHandler).to(SqliteDatabaseHandler).inSingletonScope();
 container.bind<ApplicationContext>(TYPES.ApplicationContext).to(DefaultApplicationContext).inSingletonScope();
+container.bind<Me2dayService>(TYPES.Me2dayService).to(Me2day).inSingletonScope();
 
 const env: Environment = {
   mode: OPEN_READWRITE | OPEN_CREATE,

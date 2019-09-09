@@ -10,7 +10,7 @@ export default class DefaultLogHandler extends DefaultResourceHandler<winston.Lo
   constructor() {
     super(() => {
       return winston.createLogger({
-        level: 'debug',
+        level: 'info',
         transports: [
           new winston.transports.Console()
         ],

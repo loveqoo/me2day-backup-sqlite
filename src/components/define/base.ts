@@ -3,6 +3,7 @@ import { Logger } from "winston";
 import { Database, RunResult } from "sqlite3";
 import * as fs from "fs";
 import { Stats } from "fs";
+import * as map from "./me2day.map";
 
 export interface Pair<A, B> {
   left: A
@@ -67,7 +68,6 @@ export interface FileHandler {
   checkStats: (path: string, precondition: Precondition<fs.Stats | void>) => Promise<boolean>
   getFileList: (path: string) => Promise<string[]>
   checkFileList: (path: string, precondition: Precondition<string[]>) => Promise<boolean>
-  execute: (base: string, f: (path: string) => Promise<void>, filter: (path: string) => boolean) => Promise<void>
 }
 
 type ParseResult = <T> (f: (pair: Pair<CheerioStatic, Cheerio>) => T) => T;
@@ -88,4 +88,12 @@ export interface ApplicationContext {
 
 export interface Mapper<S, T> {
   map: (source: S, option?: {}) => T
+}
+
+export interface Me2dayService {
+  checkDir(dirPath: string): Promise<boolean>
+
+  parse(filePath: string): Promise<map.Post>
+
+  save(post: map.Post, retry: () => Promise<void>): Promise<void>
 }

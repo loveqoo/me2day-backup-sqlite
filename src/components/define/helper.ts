@@ -81,30 +81,14 @@ export const Databases = {
   }
 };
 
-
-type PromiseSupplier<T> = () => Promise<T>
-
 export const Promises = {
-  toPromise(f: () => void) {
-    return new Promise((resolve) => {
-      f();
-      resolve();
-    });
-  },
-  sequential<T>(sources: T[], supplier: (t: T) => Promise<void>, from?: Promise<void>): Promise<void> {
-    let promise: Promise<void> = from || Promise.resolve();
-    sources.forEach(source => {
-      promise = promise.then(() => {
-        return supplier(source);
-      });
-    });
-    return promise;
-  },
-  toSequential(supplierList: PromiseSupplier<void>[], from?: Promise<void>): Promise<void> {
-    let promise: Promise<void> = from || Promise.resolve();
-    supplierList.forEach(supplier => {
-      promise = promise.then(() => supplier())
-    });
-    return promise;
+  async sequential<T>(supplier: () => Promise<T[]>, consumer: (t: T, retry: () => Promise<void>) => Promise<void>) {
+    const sources: T[] = await supplier();
+    const inner = async () => {
+      if (sources.length === 0) return;
+      await consumer(sources.shift(), inner);
+      await inner();
+    };
+    await inner();
   }
 };

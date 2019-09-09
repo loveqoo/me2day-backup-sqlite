@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node --max_old_space_size=8192 build/index.js",
+    "start": "tsc && node --max_old_space_size=512 build/index.js",
     "test": "mocha -r ts-node/register test/**/*.test.ts"
   },
   "keywords": [],
