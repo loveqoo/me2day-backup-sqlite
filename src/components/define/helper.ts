@@ -1,5 +1,6 @@
 import { Timestamp } from "./me2day.map";
 import { Database } from "sqlite3";
+import "reflect-metadata";
 
 export const Dates = {
   toDatabaseTimestamp: (ts: Timestamp): string => {

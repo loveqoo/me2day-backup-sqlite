@@ -11,6 +11,7 @@ import {
   ImageQueries,
   LocationQueries,
   PeopleQueries,
+  PostLocationQueries,
   PostMetooQueries,
   PostQueries,
   PostTagQueries,
@@ -89,7 +90,8 @@ export default class Me2day implements Me2dayService {
         await Databases.runs(db, post.images.map(image => ImageQueries.insert(image, postId)));
       }
       if (post.location) {
-        await Databases.run(db, LocationQueries.insert(post.location, postId));
+        await Databases.run(db, LocationQueries.insert(post.location));
+        await Databases.run(db, PostLocationQueries.insert(postId, post.location.name));
       }
       if (post.embed) {
         await Databases.run(db, EmbedQueries.insert(post.embed, postId));
@@ -106,5 +108,4 @@ export default class Me2day implements Me2dayService {
       db.run("ROLLBACK");
     }
   }
-
 }

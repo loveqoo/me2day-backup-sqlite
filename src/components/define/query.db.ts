@@ -100,7 +100,9 @@ export const PostMetooQueries = {
 
 export const LocationQueries = {
   findByName: (name: string) => `SELECT * FROM LOCATION WHERE name = '${name}'`,
-  insert: (location: map.Location, postId: number) => `INSERT INTO LOCATION (name, link, image_path, post_id) VALUES ('${location.name}', '${location.link}', '${location.image_path}', ${postId})`
+  insert: (location: map.Location) => `INSERT INTO LOCATION (name, link, image_path) 
+    SELECT '${location.name}', '${location.link}', '${location.image_path}' WHERE NOT EXISTS (SELECT 1 FROM LOCATION WHERE name = '${location.name}')
+  `
 };
 
 export const LocationMappers = {
@@ -112,6 +114,10 @@ export const LocationMappers = {
       post_id: row.post_id
     }
   }
+};
+
+export const PostLocationQueries = {
+  insert: (postId: number, locationName: string) => `INSERT INTO POST_LOCATION (post_id, location_name) VALUES (${postId}, '${locationName}')`
 };
 
 export const ImageQueries = {

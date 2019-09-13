@@ -98,12 +98,12 @@ export default class SqliteDatabaseHandler extends DefaultResourceHandler<Databa
     await db.serialize(async () => {
       try {
         db.run("BEGIN");
-        logger.info(`Transaction Start`);
+        logger.debug(`Transaction Start`);
         await f(db);
         db.run("COMMIT");
-        logger.info(`Transaction End`);
+        logger.debug(`Transaction End`);
       } catch (error) {
-        logger.info(`Transaction Error: ${error}`);
+        logger.debug(`Transaction Error: ${error}`);
         db.run("ROLLBACK");
       }
     });
