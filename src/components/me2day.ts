@@ -11,6 +11,7 @@ import {
   ImageQueries,
   LocationQueries,
   PeopleQueries,
+  PostAnchorQueries,
   PostLocationQueries,
   PostMetooQueries,
   PostQueries,
@@ -77,6 +78,9 @@ export default class Me2day implements Me2dayService {
         return;
       }
       const postId = postResult.lastID;
+      if (post.content.anchors.length > 0) {
+        await Databases.runs(db, post.content.anchors.map(anchor => PostAnchorQueries.insert(postId, anchor)));
+      }
       if (post.metoo.length > 0) {
         await Databases.runs(db, post.metoo.map(people => PeopleQueries.insert(people)));
         await Databases.runs(db, post.metoo.map(people => PostMetooQueries.insert(postId, people.id)));
@@ -99,6 +103,7 @@ export default class Me2day implements Me2dayService {
       if (post.comments.length > 0) {
         await Databases.runs(db, post.comments.map(comment => comment.writer).map(people => PeopleQueries.insert(people)));
         await Databases.runs(db, post.comments.map(comment => CommentQueries.insert(comment, postId)));
+        // TODO: save contents anchor
       }
       db.run("COMMIT");
       logger.info(post.content.body);

@@ -98,6 +98,10 @@ export const PostMetooQueries = {
   insert: (postId: number, peopleId: string) => `INSERT INTO POST_METOO (post_id, people_id) VALUES (${postId}, '${peopleId}')`
 };
 
+export const PostAnchorQueries = {
+  insert: (postId: number, anchor: map.Anchor) => `INSERT INTO POST_ANCHOR (url, text, domain, post_id) VALUES ('${anchor.url}', '${anchor.title.replace(/'/g, "\'\'")}', '${anchor.domain}', ${postId})`
+};
+
 export const LocationQueries = {
   findByName: (name: string) => `SELECT * FROM LOCATION WHERE name = '${name}'`,
   insert: (location: map.Location) => `INSERT INTO LOCATION (name, link, image_path) 
