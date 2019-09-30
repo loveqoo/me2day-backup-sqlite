@@ -8,7 +8,7 @@ import { Promises } from "./components/define/helper";
 const context = container.get<ApplicationContext>(TYPES.ApplicationContext);
 const env = container.get<Environment>("Environment");
 const me2dayService = container.get<Me2dayService>(TYPES.Me2dayService);
-env.backup_path = '/Users/anthony/iCloud\ Drive\(아카이브\)/Documents/backup/me2day/garangnip';
+env.backup_path = '/Users/anthony/Documents/me2day/garangnip';
 
 const SCHEMA_FILE = "./db/schema.sql";
 
