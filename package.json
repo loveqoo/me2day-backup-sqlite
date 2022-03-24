@@ -18,7 +18,7 @@
     "sqlite3": "^4.1.0",
     "winston": "^3.2.1",
     "yargs-parser": ">=13.1.2",
-    "minimist": ">=0.2.1"
+    "minimist": ">=1.2.6"
   },
   "devDependencies": {
     "@types/chai": "^4.2.1",
