@@ -1,9 +1,13 @@
+import type { CheerioAPI } from "cheerio";
 import * as winston from "winston";
 import { Logger } from "winston";
 import { Database, RunResult } from "sqlite3";
 import * as fs from "fs";
 import { Stats } from "fs";
 import * as map from "./me2day.map";
+
+export type CheerioStatic = CheerioAPI;
+export type Cheerio = ReturnType<CheerioAPI>;
 
 export interface Pair<A, B> {
   left: A

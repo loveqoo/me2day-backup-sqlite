@@ -1,8 +1,7 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "./inversify/types";
-import { DatabaseHandler, FileHandler, LogHandler, Mapper, Me2dayService, Pair, Parser, Preconditions } from "./define/base";
+import { DatabaseHandler, FileHandler, LogHandler, Mapper, Me2dayService, Pair, Parser, Preconditions, CheerioStatic, Cheerio } from "./define/base";
 import * as map from "./define/me2day.map";
-import "cheerio";
 import * as path from "path";
 import { Databases } from "./define/helper";
 import {

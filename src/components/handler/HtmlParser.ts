@@ -1,4 +1,4 @@
-import { FileHandler, Pair, Parser, ResourceHandler, toPair } from "../define/base";
+import { FileHandler, Pair, Parser, ResourceHandler, toPair, CheerioStatic, Cheerio } from "../define/base";
 import { inject, injectable } from "inversify";
 import * as winston from "winston";
 import { TYPES } from "../inversify/types";
@@ -15,7 +15,8 @@ export default class DefaultHtmlParser implements Parser {
 
   async load(path: string) {
     const data = await this.fileHandler.read(path);
-    const $: CheerioStatic = cheerio.load(data, { normalizeWhitespace: true });
+    // Keep the default HTML (parse5) parser; normalizeWhitespace was ignored by it.
+    const $: CheerioStatic = cheerio.load(data);
     return Promise.resolve(<T>(f: (pair: Pair<CheerioStatic, Cheerio>) => T) => f(toPair($, $.root())));
   }
 }

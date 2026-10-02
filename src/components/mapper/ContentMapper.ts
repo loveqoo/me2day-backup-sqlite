@@ -1,6 +1,5 @@
-import { Mapper, Pair } from "../define/base";
+import { Mapper, Pair, CheerioStatic, Cheerio } from "../define/base";
 import { injectable } from "inversify";
-import "cheerio";
 import * as map from "../define/me2day.map";
 import { Anchor } from "../define/me2day.map";
 

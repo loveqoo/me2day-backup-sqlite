@@ -1,6 +1,5 @@
-import { DatabaseHandler, Mapper, Pair } from "../define/base";
+import { DatabaseHandler, Mapper, Pair, CheerioStatic, Cheerio } from "../define/base";
 import * as map from "../define/me2day.map";
-import "cheerio";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../inversify/types";
 

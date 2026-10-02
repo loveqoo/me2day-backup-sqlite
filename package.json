@@ -11,10 +11,9 @@
   "author": "Anthony Jeong",
   "license": "ISC",
   "dependencies": {
-    "@types/cheerio": "^0.22.13",
-    "cheerio": "^1.0.0-rc.3",
+    "cheerio": "1.0.0",
     "inversify": "^5.0.1",
-    "minimist": ">=0.2.1",
+    "minimist": "1.2.8",
     "reflect-metadata": "^0.1.13",
     "sqlite3": "^6.0.1",
     "winston": "^3.2.1",
@@ -23,11 +22,11 @@
   "devDependencies": {
     "@types/chai": "^4.2.1",
     "@types/mocha": "^5.2.7",
-    "@types/node": "^12.7.3",
+    "@types/node": "^22.20.4",
     "@types/sqlite3": "^3.1.5",
     "chai": "^4.2.0",
-    "mocha": "^11.7.6",
+    "mocha": "^12.0.2",
     "ts-node": "^8.3.0",
-    "typescript": "^3.6.2"
+    "typescript": "~5.9.3"
   }
 }

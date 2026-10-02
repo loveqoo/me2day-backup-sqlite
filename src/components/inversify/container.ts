@@ -1,7 +1,6 @@
 import { Container } from "inversify";
-import { ApplicationContext, Environment, FileHandler, LogHandler, Mapper, Me2dayService, Pair, Parser, ResourceHandler } from "../define/base";
+import { ApplicationContext, Environment, FileHandler, LogHandler, Mapper, Me2dayService, Pair, Parser, ResourceHandler, CheerioStatic, Cheerio } from "../define/base";
 import * as map from "../define/me2day.map"
-import "cheerio";
 import { TYPES } from "./types";
 import { Database, OPEN_CREATE, OPEN_READWRITE } from "sqlite3";
 import DefaultLogHandler from "../handler/Logger";
